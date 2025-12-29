@@ -6,6 +6,7 @@ import viteLogo from '/vite.svg'
 import tauriLogo from './assets/tauri-icon.webp';
 import './App.css'
 import {clearToken, getToken, login, saveToken} from './Auth.ts'
+import { invoke } from "@tauri-apps/api/core";
 
 const isTauri = typeof window !== 'undefined' && ('__TAURI__' in window || '__TAURI_INTERNALS__' in window)
 
@@ -27,6 +28,20 @@ function App() {
             setError(message);
         }
     };
+
+    const getAppInfo = async (): Promise<string> => {
+        return await invoke("get_app_info");
+    }
+
+    const greet = async (name: string): Promise<string> => {
+        return await invoke("greet", { name });
+    }
+
+    const handleClick = async () => {
+        const info = await getAppInfo();
+        const msg = await greet("Julian Razif Figaro");
+        alert(`${info}\n${msg}`);
+    }
 
     useEffect(() => {
         let active = true;
@@ -79,6 +94,9 @@ function App() {
                 <button onClick={() => setCount((count) => count + 1)}>
                     count is {count}
                 </button>
+                <button onClick={handleClick}>
+                    Call Rust IPC
+                </button>
                 <p>
                     Edit <code>src/App.tsx</code> and save to test HMR
                 </p>
@@ -97,7 +115,7 @@ function App() {
                 )}
             </div>
             <p className="read-the-docs">
-                Click on the Vite and React logos to learn more
+                Click on the Spring-Boot Vite React and Tauri logos to learn more
             </p>
         </>
     )
